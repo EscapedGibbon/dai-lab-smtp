@@ -1,12 +1,24 @@
 package labo.smtp.client;
 
-import java.io.IOException;
 import java.util.List;
 
 public class Main {
+
     public static void main(String[] args) {
         try {
             ConfigManager config = new ConfigManager("config.properties", "victims.txt", "messages.txt");
+
+            // Valide les fichiers
+            if (config.getVictims().isEmpty()) {
+                throw new IllegalArgumentException("Le fichier des victimes est vide ou invalide.");
+            }
+            if (config.getMessages().isEmpty()) {
+                throw new IllegalArgumentException("Le fichier des messages est vide ou invalide.");
+            }
+            if (config.getVictims().size() < config.getGroupCount() * 2) {
+                throw new IllegalArgumentException("Pas assez de victimes pour former " + config.getGroupCount() + " groupes.");
+            }
+
             SMTPClient smtpClient = new SMTPClient(config.getSmtpServer(), config.getSmtpPort());
             smtpClient.connect();
 
@@ -18,7 +30,8 @@ public class Main {
             }
 
             smtpClient.disconnect();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.err.println("Erreur : " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -1,0 +1,17 @@
+Subject: You've won a prize!
+Congratulations! You've been selected as the lucky winner of our annual draw. Click here to claim your prize: [fake-link].
+
+---
+
+Subject: Urgent: Password Reset Required
+We noticed unusual activity in your account. For your safety, please reset your password using this link immediately: [fake-link].
+
+---
+
+Subject: Meeting Rescheduled
+The meeting has been rescheduled to tomorrow at 3 PM. Apologies for the inconvenience caused.
+
+---
+
+Subject: Surprise Party Alert!
+Hey team! We’re organizing a surprise party for Peter’s birthday. Don’t forget to bring snacks and drinks!
