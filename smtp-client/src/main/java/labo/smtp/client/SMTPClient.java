@@ -6,9 +6,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public class SMTPClient {
 
+    private static final String CRLF = "\r\n";
     private String smtpServer;
     private int smtpPort;
     private Socket socket;
@@ -23,8 +26,8 @@ public class SMTPClient {
     public void connect() throws IOException {
         System.out.println("Connexion au serveur SMTP...");
         socket = new Socket(smtpServer, smtpPort);
-        writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+        writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
+        reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         System.out.println("Connecté au serveur SMTP.");
         readResponse(); // Lire la réponse initiale du serveur
     }
@@ -48,13 +51,15 @@ public class SMTPClient {
     }
 
     private void sendCommand(String command) throws IOException {
-        writer.println(command);
+        writer.print(command + CRLF);
+        writer.flush();
         System.out.println("CLIENT: " + command);
         readResponse();
     }
 
     public void sendEmail(Email email) throws IOException {
-        sendCommand("HELO prank-client");
+        sendCommand("EHLO localhost");
+
         sendCommand("MAIL FROM:<" + email.getSender() + ">");
 
         for (String recipient : email.getRecipients()) {
@@ -63,27 +68,26 @@ public class SMTPClient {
 
         sendCommand("DATA");
 
-        // Construire et envoyer l'e-mail
-        writer.println("Subject: " + email.getSubject());
-        writer.println();
-        writer.println(email.getBody());
-        writer.println(".");
-        writer.flush();
-        System.out.println("E-mail envoyé au serveur SMTP.");
+        // En-têtes MIME
+        writer.print("Content-Type: text/plain; charset=utf-8" + CRLF);
+        writer.print("From: " + email.getSender() + CRLF);
+        writer.print("To: " + String.join(", ", email.getRecipients()) + CRLF);
 
-        // Ajouter un délai ici
-        try {
-            Thread.sleep(1000); // Délai d'attente de 1 seconde
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // Encodage Base64 pour l'objet
+        String subjectEncoded = Base64.getEncoder().encodeToString(email.getSubject().getBytes(StandardCharsets.UTF_8));
+        writer.print("Subject: =?utf-8?B?" + subjectEncoded + "?=" + CRLF);
+
+        writer.print(CRLF); // Ligne vide entre les en-têtes et le corps
+        writer.print(email.getBody() + CRLF);
+        writer.print("." + CRLF); // Terminaison des données
+        writer.flush();
+
+        System.out.println("E-mail envoyé au serveur SMTP.");
 
         // Lire la réponse après l'envoi des données
         String response = readResponse();
         if (!response.startsWith("250")) {
             throw new IOException("Erreur lors de l'envoi du message : " + response);
         }
-
-        sendCommand("QUIT");
     }
 }
