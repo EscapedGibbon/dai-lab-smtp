@@ -7,7 +7,8 @@ public class Main {
   public static void main(String[] args) {
 
     if (args.length != 3) {
-      System.err.println("Usage: java Main <config_filepath> <victims_filepath> <messages_filepath>");
+      System.err.println(
+          "Mauvais nombre d'arguments. Usage: java Main <config_filepath> <victims_filepath> <messages_filepath>");
       System.exit(1);
     }
     try {
