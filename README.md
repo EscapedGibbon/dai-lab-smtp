@@ -85,7 +85,7 @@ Compile the program using Maven:
 ```bash
 mvn clean package
 ```
-(IMPORTANT: run this command from the same folder where `pom.xml` file is located.)
+(**IMPORTANT**: run this command from the same folder where `pom.xml` file is located.)
 
 and then execute the jar file from `target` folder with three compilation arguments:
  - filepath to config file
