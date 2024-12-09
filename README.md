@@ -81,10 +81,20 @@ Edit the following files:
   ```
 
 ### 3. Build and Run the Application  
-Compile and execute the program using a Java:  
+Compile the program using Maven:  
 ```bash
-java Main.java
+mvn clean package
 ```
+and then execute the jar file from `target` folder with three compilation arguments:
+ - filepath to config file
+ - filepath to file with victim names
+ - filepath to file with messages
+
+In our case the command is:
+```bash
+java -jar ./target/smtp-client-1.0-SNAPSHOT.jar ../config.properties ../victims.txt ../messages.txt
+```
+Hoowever, you can use files from any folder, as long as they align with the file structure shown above.
 
 The application will connect to the configured SMTP server and send the prank emails.
 
